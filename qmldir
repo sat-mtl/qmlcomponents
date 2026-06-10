@@ -1,0 +1,23 @@
+module ca.qc.sat.qmlcomponents
+
+# Theme (shared singleton + palettes)
+singleton Theme        theme/Theme.qml
+DarkPalette            theme/DarkPalette.qml
+LightPalette           theme/LightPalette.qml
+
+# Generic controls
+CustomButton           ui/CustomButton.qml
+CustomComboBox         ui/CustomComboBox.qml
+EditableComboBox       ui/EditableComboBox.qml
+CustomLabel            ui/CustomLabel.qml
+CustomTextField        ui/CustomTextField.qml
+CustomSwitch           ui/CustomSwitch.qml
+AppMenuBar             ui/AppMenuBar.qml
+AboutDialog            ui/AboutDialog.qml
+LogView                ui/LogView.qml
+
+# Score-app components (require the host-provided Score.UI module at runtime)
+VideoPreview           ui/VideoPreview.qml
+
+# Video-input picker (pure presentation; host owns the Score device lifecycle)
+InputSourceSelector    io/InputSourceSelector.qml
