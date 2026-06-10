@@ -63,9 +63,13 @@ function isTypable(name) {
 }
 
 // Platform-aware backend list. `advanced` gates the live network/shared
-// backends (NDI/Spout/Syphon) behind the host's env-var check.
-function availableBackends(platformOs, advanced) {
-    const base = ["Camera", "Video file"]
+// backends (NDI/Spout/Syphon) behind the host's env-var check. `includeCamera`
+// (default true) lets apps without a camera-capture lane (e.g. DomeportPro,
+// koaia) drop the Camera entry while keeping Video file + the live backends.
+function availableBackends(platformOs, advanced, includeCamera) {
+    if (includeCamera === undefined)
+        includeCamera = true
+    const base = includeCamera ? ["Camera", "Video file"] : ["Video file"]
     if (!advanced)
         return base
 

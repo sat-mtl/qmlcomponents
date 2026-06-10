@@ -19,8 +19,11 @@ QtObject {
     readonly property LightPalette lightPalette: LightPalette {}
 
     // ---- Colours (typed access so qmllint can verify every token) ----
-    readonly property color primaryColor: dark ? darkPalette.primaryColor : lightPalette.primaryColor
-    readonly property color secondaryColor: dark ? darkPalette.secondaryColor : lightPalette.secondaryColor
+    // primaryColor / secondaryColor are the brand accent: writable so an app
+    // can pin its own accent (e.g. koaia's teal) while keeping every other
+    // token palette-driven. The default still tracks the active palette.
+    property color primaryColor: dark ? darkPalette.primaryColor : lightPalette.primaryColor
+    property color secondaryColor: dark ? darkPalette.secondaryColor : lightPalette.secondaryColor
     readonly property color backgroundColor: dark ? darkPalette.backgroundColor : lightPalette.backgroundColor
     readonly property color backgroundColorSecondary: dark ? darkPalette.backgroundColorSecondary : lightPalette.backgroundColorSecondary
     readonly property color backgroundColorTertiary: dark ? darkPalette.backgroundColorTertiary : lightPalette.backgroundColorTertiary

@@ -29,11 +29,12 @@ ColumnLayout {
     // ---- Inputs from the host ----
     property string platformOs: Qt.platform.os
     property bool advanced: false
+    property bool cameraEnabled: true      // apps without camera capture (DomeportPro/koaia) set false
     property var sources: []               // discovered source names for the current device backend
     property string statusText: ""         // optional host-provided hint ("No NDI sources found")
 
     // ---- Derived / current state ----
-    property var backends: Backends.availableBackends(platformOs, advanced)
+    property var backends: Backends.availableBackends(platformOs, advanced, cameraEnabled)
     property string currentBackend: backends.length > 0 ? backends[0] : ""
     property string currentSource: ""
     property string videoFilePath: ""

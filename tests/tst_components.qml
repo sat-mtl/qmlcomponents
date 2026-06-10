@@ -80,6 +80,29 @@ TestCase {
         verify(sel.backends.indexOf("Spout") === -1)
     }
 
+    function test_input_selector_camera_optional() {
+        // cameraEnabled:false drops Camera (DomeportPro/koaia) but keeps Video file
+        var sel = createTemporaryObject(cInput, tc, { advanced: false, cameraEnabled: false })
+        verify(sel !== null)
+        compare(sel.backends.length, 1)
+        verify(sel.backends.indexOf("Camera") === -1)
+        verify(sel.backends.indexOf("Video file") !== -1)
+        // advanced still appends the live backends, still no Camera
+        sel.advanced = true
+        sel.platformOs = "windows"
+        verify(sel.backends.indexOf("Camera") === -1)
+        verify(sel.backends.indexOf("NDI") !== -1)
+        verify(sel.backends.indexOf("Spout") !== -1)
+    }
+
+    function test_theme_accent_override() {
+        // The brand accent is writable so an app can pin its own colour.
+        var saved = Theme.primaryColor.toString()
+        Theme.primaryColor = "#006B85"
+        compare(Theme.primaryColor.toString(), "#006b85")
+        Theme.primaryColor = saved
+    }
+
     SignalSpy { id: backendSpy }
 
     function test_input_selector_signals() {
