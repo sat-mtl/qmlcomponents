@@ -95,6 +95,21 @@ TestCase {
         compare(sel.backends[0], "Video file")
     }
 
+    function test_about_partner_logos() {
+        // The shared dialog accepts a data list of footer/partner logos so
+        // every app reuses the same skeleton and only varies the content.
+        var dlg = createTemporaryObject(cAbout, tc, {
+            appName: "X",
+            partnerLogos: [
+                { source: "a.png", website: "https://a" },
+                { source: "b.png" }
+            ]
+        })
+        verify(dlg !== null)
+        compare(dlg.partnerLogos.length, 2)
+        compare(dlg.partnerLogos[0].website, "https://a")
+    }
+
     function test_theme_accent_override() {
         // The brand accent is writable so an app can pin its own colour.
         var saved = Theme.primaryColor.toString()
