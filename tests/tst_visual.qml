@@ -43,7 +43,7 @@ TestCase {
             Rectangle { Layout.fillWidth: true; height: 1; color: Theme.separatorColor }
             InputSourceSelector {
                 Layout.fillWidth: true
-                advanced: true
+                allowedBackends: ["Camera", "Video file", "NDI", "Spout", "Syphon"]
                 platformOs: "windows"
                 sources: ["OBS (NDI)", "Resolume Arena"]
                 statusText: "Type a source if it is not listed"

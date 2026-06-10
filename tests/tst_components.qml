@@ -58,17 +58,17 @@ TestCase {
     }
 
     function test_input_selector_logic() {
-        var sel = createTemporaryObject(cInput, tc, { advanced: false })
+        var sel = createTemporaryObject(cInput, tc, { allowedBackends: ["Camera", "Video file"] })
         verify(sel !== null)
-        // Basic gating: without advanced, only Camera + Video file
+        // The picker offers exactly the host-allowed, platform-valid entries
         compare(sel.backends.length, 2)
         // Descriptor table exposes verified UUIDs
         compare(sel.descriptor("Camera").uuid, "d615690b-f2e2-447b-b70e-a800552db69c")
         compare(sel.descriptor("NDI").uuid, "ae78b7c6-6400-483e-b45b-fd6ff87ec700")
         verify(sel.descriptor("Video file").kind === "file")
 
-        // Advanced + windows must expose NDI + Spout (not Syphon)
-        sel.advanced = true
+        // A full allow-list on Windows must expose NDI + Spout (not Syphon)
+        sel.allowedBackends = ["Camera", "Video file", "NDI", "Spout", "Syphon"]
         sel.platformOs = "windows"
         verify(sel.backends.indexOf("NDI") !== -1)
         verify(sel.backends.indexOf("Spout") !== -1)
@@ -80,19 +80,19 @@ TestCase {
         verify(sel.backends.indexOf("Spout") === -1)
     }
 
-    function test_input_selector_camera_optional() {
-        // cameraEnabled:false drops Camera (DomeportPro/koaia) but keeps Video file
-        var sel = createTemporaryObject(cInput, tc, { advanced: false, cameraEnabled: false })
+    function test_input_selector_allowlist() {
+        // The host can omit Camera (DomeportPro/koaia) — only what it allows shows.
+        var sel = createTemporaryObject(cInput, tc, {
+            allowedBackends: ["Video file", "NDI", "Spout", "Syphon"], platformOs: "windows" })
         verify(sel !== null)
-        compare(sel.backends.length, 1)
         verify(sel.backends.indexOf("Camera") === -1)
         verify(sel.backends.indexOf("Video file") !== -1)
-        // advanced still appends the live backends, still no Camera
-        sel.advanced = true
-        sel.platformOs = "windows"
-        verify(sel.backends.indexOf("Camera") === -1)
         verify(sel.backends.indexOf("NDI") !== -1)
         verify(sel.backends.indexOf("Spout") !== -1)
+        // Unknown names and platform-invalid entries are dropped
+        sel.allowedBackends = ["Video file", "Bogus", "Syphon"]
+        compare(sel.backends.length, 1)
+        compare(sel.backends[0], "Video file")
     }
 
     function test_theme_accent_override() {
@@ -106,7 +106,8 @@ TestCase {
     SignalSpy { id: backendSpy }
 
     function test_input_selector_signals() {
-        var sel = createTemporaryObject(cInput, tc, { advanced: true, platformOs: "windows" })
+        var sel = createTemporaryObject(cInput, tc, {
+            allowedBackends: ["Camera", "Video file", "NDI", "Spout"], platformOs: "windows" })
         backendSpy.target = sel
         backendSpy.signalName = "backendSelected"
         sel.backendSelected("NDI")

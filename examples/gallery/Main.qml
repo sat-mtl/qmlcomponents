@@ -84,7 +84,7 @@ ApplicationWindow {
 
             InputSourceSelector {
                 Layout.fillWidth: true
-                advanced: true
+                allowedBackends: ["Camera", "Video file", "NDI", "Spout", "Syphon"]
                 platformOs: "windows"   // force-show NDI + Spout in the gallery
                 sources: ["OBS (NDI)", "Resolume"]
                 statusText: "Type a source if it is not listed"

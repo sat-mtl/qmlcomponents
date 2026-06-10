@@ -14,9 +14,14 @@ import ca.qc.sat.qmlcomponents
 // lifecycle (Score.createDevice / setAddress / mixer). That separation is what
 // makes the widget reusable across livepose / DomeportPro / future apps.
 //
+// The host decides which protocols the picker may offer via `allowedBackends`
+// (an explicit allow-list); the widget keeps only the platform-valid entries.
+//
 // Typical host wiring:
 //   InputSourceSelector {
-//       advanced: !!Util.environmentVariable("LIVEPOSE_ADVANCED_IO")
+//       // host computes the protocol list (env-var gating, platform, etc.)
+//       allowedBackends: advancedIO ? ["Camera","Video file","NDI","Spout","Syphon"]
+//                                    : ["Camera","Video file"]
 //       sources: discoveredNames          // app populates from enumeration
 //       onBackendSelected: name => app.onBackendChanged(name)
 //       onSourceSelected:  name => app.connectSource(descriptor(name)?.uuid ?? "", name)
@@ -28,13 +33,17 @@ ColumnLayout {
 
     // ---- Inputs from the host ----
     property string platformOs: Qt.platform.os
-    property bool advanced: false
-    property bool cameraEnabled: true      // apps without camera capture (DomeportPro/koaia) set false
+    // Explicit allow-list of the protocols this picker may offer. The host owns
+    // the policy (which backends, env-var gating); the widget only filters out
+    // entries that are not valid on the current platform (Spout→Windows,
+    // Syphon→macOS) and renders them. Known names: Camera, Video file, NDI,
+    // Spout, Syphon.
+    property var allowedBackends: ["Camera", "Video file"]
     property var sources: []               // discovered source names for the current device backend
     property string statusText: ""         // optional host-provided hint ("No NDI sources found")
 
     // ---- Derived / current state ----
-    property var backends: Backends.availableBackends(platformOs, advanced, cameraEnabled)
+    property var backends: Backends.filterBackends(allowedBackends, platformOs)
     property string currentBackend: backends.length > 0 ? backends[0] : ""
     property string currentSource: ""
     property string videoFilePath: ""

@@ -62,24 +62,26 @@ function isTypable(name) {
     return !!d && d.typable === true
 }
 
-// Platform-aware backend list. `advanced` gates the live network/shared
-// backends (NDI/Spout/Syphon) behind the host's env-var check. `includeCamera`
-// (default true) lets apps without a camera-capture lane (e.g. DomeportPro,
-// koaia) drop the Camera entry while keeping Video file + the live backends.
-function availableBackends(platformOs, advanced, includeCamera) {
-    if (includeCamera === undefined)
-        includeCamera = true
-    const base = includeCamera ? ["Camera", "Video file"] : ["Video file"]
-    if (!advanced)
-        return base
-
-    const extra = []
-    for (const name in DESCRIPTORS) {
+// Platform-aware filter of an explicit backend allow-list. The host decides
+// which protocols the selector may offer (e.g. ["Camera", "Video file"] for a
+// basic build, or ["Video file", "NDI", "Spout", "Syphon"] for an advanced
+// one); this keeps only the entries that exist and are valid on the current
+// platform (Spout → Windows, Syphon → macOS). Unknown names are dropped.
+// Order follows the host-provided list.
+function filterBackends(names, platformOs) {
+    const out = []
+    if (!names)
+        return out
+    for (const name of names) {
         const d = DESCRIPTORS[name]
-        if (d.kind !== "device" || name === "Camera")
+        if (!d)
             continue
+        if (d.kind !== "device") {
+            out.push(name)              // non-device entries (Video file) are always valid
+            continue
+        }
         if (d.platforms.indexOf("*") !== -1 || d.platforms.indexOf(platformOs) !== -1)
-            extra.push(name)
+            out.push(name)
     }
-    return base.concat(extra)
+    return out
 }
