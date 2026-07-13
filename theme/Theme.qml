@@ -14,7 +14,7 @@ QtObject {
     id: theme
 
     // ---- Active palette selection ----
-    property bool dark: true
+    property bool dark: false
     readonly property DarkPalette darkPalette: DarkPalette {}
     readonly property LightPalette lightPalette: LightPalette {}
 
