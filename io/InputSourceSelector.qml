@@ -141,6 +141,7 @@ ColumnLayout {
             onTextChanged: {
                 selector.videoFilePath = text
                 selector.videoFileSelected(text)
+                selector.backendSelected(selector.currentBackend)
             }
         }
 
