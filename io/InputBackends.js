@@ -44,7 +44,10 @@ const DESCRIPTORS = {
         platforms: ["osx"]
     },
     "Video file": {
-        kind: "file"
+        kind: "video"
+    },
+    "Image file": {
+        kind: "image"
     }
 }
 
@@ -57,14 +60,24 @@ function isDevice(name) {
     return !!d && d.kind === "device"
 }
 
+function isVideo(name) {
+    const d = DESCRIPTORS[name]
+    return !!d && d.kind === "video"
+}
+
+function isImage(name) {
+    const d = DESCRIPTORS[name]
+    return !!d && d.kind === "image"
+}
+
 function isTypable(name) {
     const d = DESCRIPTORS[name]
     return !!d && d.typable === true
 }
 
 // Platform-aware filter of an explicit backend allow-list. The host decides
-// which protocols the selector may offer (e.g. ["Camera", "Video file"] for a
-// basic build, or ["Video file", "NDI", "Spout", "Syphon"] for an advanced
+// which protocols the selector may offer (e.g. ["Camera", "Video file", "Image file"] for a
+// basic build, or ["Video file", "Image file", "NDI", "Spout", "Syphon"] for an advanced
 // one); this keeps only the entries that exist and are valid on the current
 // platform (Spout → Windows, Syphon → macOS). Unknown names are dropped.
 // Order follows the host-provided list.
@@ -77,7 +90,7 @@ function filterBackends(names, platformOs) {
         if (!d)
             continue
         if (d.kind !== "device") {
-            out.push(name)              // non-device entries (Video file) are always valid
+            out.push(name)              // non-device entries (Video file, Image file) are always valid
             continue
         }
         if (d.platforms.indexOf("*") !== -1 || d.platforms.indexOf(platformOs) !== -1)

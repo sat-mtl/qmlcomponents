@@ -38,7 +38,7 @@ ColumnLayout {
     // entries that are not valid on the current platform (Spout→Windows,
     // Syphon→macOS) and renders them. Known names: Camera, Video file, NDI,
     // Spout, Syphon.
-    property var allowedBackends: ["Camera", "Video file"]
+    property var allowedBackends: ["Camera", "Video file", "Image file"]
     property var sources: []               // discovered source names for the current device backend
     property string statusText: ""         // optional host-provided hint ("No NDI sources found")
 
@@ -47,14 +47,18 @@ ColumnLayout {
     property string currentBackend: backends.length > 0 ? backends[0] : ""
     property string currentSource: ""
     property string videoFilePath: ""
+    property string imageFilePath: ""
 
     readonly property bool deviceBackend: Backends.isDevice(currentBackend)
+    readonly property bool videoBackend: Backends.isVideo(currentBackend)
+    readonly property bool imageBackend: Backends.isImage(currentBackend)
     readonly property bool typableSource: Backends.isTypable(currentBackend)
 
     // ---- Signals to the host ----
     signal backendSelected(string name)
     signal sourceSelected(string name)
     signal videoFileSelected(string path)
+    signal imageFileSelected(string path)
     signal refreshRequested
 
     // Expose the descriptor table so the host can map a name to its UUID.
@@ -130,7 +134,7 @@ ColumnLayout {
     // ---- Video-file row ----
     RowLayout {
         Layout.fillWidth: true
-        visible: !selector.deviceBackend
+        visible: selector.videoBackend
         spacing: Theme.spacing
 
         CustomTextField {
@@ -166,4 +170,45 @@ ColumnLayout {
             videoPathField.text = filePath
         }
     }
+
+    // ---- Image-file row ----
+    RowLayout {
+        Layout.fillWidth: true
+        visible: selector.imageBackend
+        spacing: Theme.spacing
+
+        CustomTextField {
+            id: imagePathField
+            Layout.fillWidth: true
+            placeholderText: qsTr("Select image file…")
+            text: selector.imageFilePath
+            onTextChanged: {
+                selector.imageFilePath = text
+                selector.imageFileSelected(text)
+                selector.backendSelected(selector.currentBackend)
+            }
+        }
+
+        Button {
+            text: qsTr("Browse")
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.fontSizeBody
+            onClicked: imageFileDialog.open()
+        }
+    }
+
+    FileDialog {
+        id: imageFileDialog
+        title: qsTr("Select Image File")
+        nameFilters: ["Image Files (*.jpg *.jpeg *.png *.gif)", "All Files (*)"]
+        onAccepted: {
+            if (!selectedFile)
+                return
+            var filePath = selectedFile.toString()
+            if (filePath.startsWith("file://"))
+                filePath = filePath.substring(7)
+            imagePathField.text = filePath
+        }
+    }
+
 }
