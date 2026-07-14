@@ -64,6 +64,18 @@ ColumnLayout {
     // Expose the descriptor table so the host can map a name to its UUID.
     function descriptor(name) { return Backends.descriptor(name) }
 
+    // Keep the backend combo's selection aligned with currentBackend, including
+    // when the host sets it programmatically (e.g. a drag-and-drop that selects
+    // the matching backend). User activation still drives the combo directly, so
+    // this is a one-way sync guarded against redundant writes.
+    onCurrentBackendChanged: syncBackendCombo()
+    Component.onCompleted: syncBackendCombo()
+    function syncBackendCombo() {
+        const idx = backends.indexOf(currentBackend)
+        if (idx >= 0 && idx !== backendCombo.currentIndex)
+            backendCombo.currentIndex = idx
+    }
+
     spacing: Theme.spacing
 
     CustomLabel {
@@ -75,6 +87,7 @@ ColumnLayout {
     // ---- Backend selector ----
     CustomComboBox {
         id: backendCombo
+        objectName: "backendCombo"
         Layout.fillWidth: true
         model: selector.backends
         onActivated: index => {

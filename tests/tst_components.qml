@@ -129,4 +129,18 @@ TestCase {
         sel.backendSelected("NDI")
         compare(backendSpy.count, 1)
     }
+
+    function test_backend_combo_reflects_currentBackend() {
+        // Programmatic currentBackend changes (e.g. a host drag-and-drop that
+        // picks the matching backend) must move the visible combo selection.
+        var sel = createTemporaryObject(cInput, tc, {
+            allowedBackends: ["Video file", "Image file", "NDI"], platformOs: "windows" })
+        verify(sel !== null)
+        var combo = findChild(sel, "backendCombo")
+        verify(combo !== null, "backendCombo not found")
+        sel.currentBackend = "Image file"
+        compare(combo.currentIndex, sel.backends.indexOf("Image file"))
+        sel.currentBackend = "NDI"
+        compare(combo.currentIndex, sel.backends.indexOf("NDI"))
+    }
 }
