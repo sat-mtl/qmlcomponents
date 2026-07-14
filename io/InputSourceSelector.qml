@@ -129,10 +129,10 @@ ColumnLayout {
             }
         }
 
-        Button {
+        CustomButton {
+            Layout.preferredWidth: 120
+            height: Theme.buttonHeight
             text: qsTr("Refresh")
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSizeBody
             onClicked: selector.refreshRequested()
         }
     }
@@ -162,10 +162,10 @@ ColumnLayout {
             }
         }
 
-        Button {
+        CustomButton {
+            Layout.preferredWidth: 120
+            height: Theme.buttonHeight
             text: qsTr("Browse")
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSizeBody
             onClicked: videoFileDialog.open()
         }
     }
@@ -202,10 +202,10 @@ ColumnLayout {
             }
         }
 
-        Button {
+        CustomButton {
+            Layout.preferredWidth: 120
+            height: Theme.buttonHeight
             text: qsTr("Browse")
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSizeBody
             onClicked: imageFileDialog.open()
         }
     }
