@@ -65,7 +65,8 @@ TestCase {
         // Descriptor table exposes verified UUIDs
         compare(sel.descriptor("Camera").uuid, "d615690b-f2e2-447b-b70e-a800552db69c")
         compare(sel.descriptor("NDI").uuid, "ae78b7c6-6400-483e-b45b-fd6ff87ec700")
-        verify(sel.descriptor("Video file").kind === "file")
+        verify(sel.descriptor("Video file").kind === "video")
+        verify(sel.descriptor("Image file").kind === "image")
 
         // A full allow-list on Windows must expose NDI + Spout (not Syphon)
         sel.allowedBackends = ["Camera", "Video file", "NDI", "Spout", "Syphon"]
