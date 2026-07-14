@@ -10,5 +10,11 @@ TextField {
     font.family: Theme.fontFamily
     font.pixelSize: Theme.fontSizeBody
     color: enabled ? Theme.textColor : Theme.textColorSecondary
+    background: Rectangle {
+        color: Theme.backgroundColorSecondary
+        border.color: Theme.borderColor
+        border.width: 1
+        radius: Theme.borderRadius
+    }
     height: Theme.inputHeight
 }
