@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // © Société des arts technologiques
+//
 // Renders a panel of components and saves a screenshot (headless via offscreen).
+//   mkdir -p "/tmp/qml-components-imports/ca/qc/sat"
+//   ln -s "$PWD" "/tmp/qml-components-imports/ca/qc/sat/qmlcomponents"
+//   QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner -import "/tmp/qml-components-imports" -input tests/tst_visual.qml
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic

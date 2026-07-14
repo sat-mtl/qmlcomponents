@@ -3,7 +3,9 @@
 //
 // Standalone gallery: instantiates every (score-free) component so the module
 // can be smoke-tested with the bare `qml` runtime, no ossia/score needed.
-//   qml -I <importpath> examples/gallery/Main.qml
+//   mkdir -p "/tmp/qml-components-imports/ca/qc/sat"
+//   ln -s "$PWD" "/tmp/qml-components-imports/ca/qc/sat/qmlcomponents"
+//   /usr/lib/qt6/bin/qml -I /tmp/qml-components-imports examples/gallery/Main.qml
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts

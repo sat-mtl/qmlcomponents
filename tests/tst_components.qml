@@ -2,7 +2,9 @@
 // © Société des arts technologiques
 //
 // Headless instantiation smoke test for the score-free components.
-//   qmltestrunner -input tests -import <importpath>
+//   mkdir -p "/tmp/qml-components-imports/ca/qc/sat"
+//   ln -s "$PWD" "/tmp/qml-components-imports/ca/qc/sat/qmlcomponents"
+//   QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner -import "/tmp/qml-components-imports" -input tests/tst_components.qml
 import QtQuick
 import QtTest
 import ca.qc.sat.qmlcomponents
