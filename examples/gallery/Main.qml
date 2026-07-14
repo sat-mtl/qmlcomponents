@@ -64,6 +64,17 @@ ApplicationWindow {
                 }
             }
 
+            CustomLabel { text: "A custom state button" }
+            CustomButton {
+                property bool isProcessing: false
+
+                Layout.preferredWidth: parent.width
+                height: Theme.buttonHeight
+                text: isProcessing ? "Stop" : "Start"
+                isActive: isProcessing
+                onClicked: isProcessing = !isProcessing
+            }
+
             CustomLabel { text: "A custom text field" }
             CustomTextField {
                 Layout.fillWidth: true
