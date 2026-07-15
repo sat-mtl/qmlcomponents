@@ -7,6 +7,7 @@ LightPalette           theme/LightPalette.qml
 
 # Generic controls
 CustomButton           ui/CustomButton.qml
+CustomTabButton        ui/CustomTabButton.qml
 CustomComboBox         ui/CustomComboBox.qml
 EditableComboBox       ui/EditableComboBox.qml
 CustomLabel            ui/CustomLabel.qml
@@ -14,6 +15,7 @@ CustomTextField        ui/CustomTextField.qml
 CustomSwitch           ui/CustomSwitch.qml
 AppMenuBar             ui/AppMenuBar.qml
 AboutDialog            ui/AboutDialog.qml
+SidePanel              ui/SidePanel.qml
 LogView                ui/LogView.qml
 
 # Score-app components (require the host-provided Score.UI module at runtime)

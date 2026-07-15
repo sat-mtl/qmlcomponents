@@ -14,12 +14,85 @@ import ca.qc.sat.qmlcomponents
 ApplicationWindow {
     id: win
     width: 480
-    height: 760
+    height: 720
     visible: true
     title: "ca.qc.sat.qmlcomponents — gallery"
     color: Theme.backgroundColor
 
     menuBar: AppMenuBar { aboutDialog: about }
+
+    ApplicationWindow {
+        id: contentWindow
+        width: 1280
+        height: 720
+        x: win.x + win.width
+        y: win.y
+        visible: true
+        title: "ca.qc.sat.qmlcomponents — content"
+        color: Theme.backgroundColor
+
+        CustomLabel {
+            anchors.centerIn: parent
+            text: "Content window — use the ☰ button to reveal the side panel"
+            color: Theme.textColorSecondary
+        }
+
+        SidePanel {
+            anchors.fill: parent
+            panelWidth: 480
+
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
+
+                TabBar {
+                    id: panelTabs
+                    Layout.fillWidth: true
+
+                    CustomTabButton { text: "Sources" }
+                    CustomTabButton { text: "Options" }
+                }
+
+                StackLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    currentIndex: panelTabs.currentIndex
+
+                    ScrollView {
+                        id: sourcesScroll
+                        contentWidth: availableWidth
+                        clip: true
+
+                        ColumnLayout {
+                            width: sourcesScroll.availableWidth
+                            spacing: Theme.spacing
+
+                            CustomLabel {
+                                Layout.margins: Theme.padding
+                                text: "hello world"
+                            }
+                        }
+                    }
+
+                    ScrollView {
+                        id: optionsScroll
+                        contentWidth: availableWidth
+                        clip: true
+
+                        ColumnLayout {
+                            width: optionsScroll.availableWidth
+                            spacing: Theme.spacing
+
+                            CustomLabel {
+                                Layout.margins: Theme.padding
+                                text: "hello tab"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     AboutDialog {
         id: about
@@ -64,15 +137,13 @@ ApplicationWindow {
                 }
             }
 
-            CustomLabel { text: "A custom state button" }
+            CustomLabel { text: "A custom content window" }
             CustomButton {
-                property bool isProcessing: false
-
                 Layout.preferredWidth: parent.width
                 height: Theme.buttonHeight
-                text: isProcessing ? "Stop" : "Start"
-                isActive: isProcessing
-                onClicked: isProcessing = !isProcessing
+                text: contentWindow.visible ? "Close" : "Open"
+                isActive: contentWindow.visible
+                onClicked: contentWindow.visible = !contentWindow.visible
             }
 
             CustomLabel { text: "A custom text field" }

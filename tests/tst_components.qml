@@ -14,6 +14,7 @@ TestCase {
     name: "qmlcomponents"
 
     Component { id: cButton; CustomButton {} }
+    Component { id: cTabButton; CustomTabButton {} }
     Component { id: cLabel; CustomLabel {} }
     Component { id: cTextField; CustomTextField {} }
     Component { id: cSwitch; CustomSwitch {} }
@@ -23,6 +24,8 @@ TestCase {
     Component { id: cAbout; AboutDialog {} }
     Component { id: cLog; LogView {} }
     Component { id: cInput; InputSourceSelector {} }
+    Component { id: cSidePanel; SidePanel {} }
+    Component { id: cSidePanelWithContent; SidePanel { CustomLabel { objectName: "injectedBody"; text: "hello world" } } }
 
     function test_theme_singleton() {
         verify(Theme.padding > 0)
@@ -42,6 +45,7 @@ TestCase {
     function test_instantiate_data() {
         return [
             { tag: "CustomButton", comp: cButton },
+            { tag: "CustomTabButton", comp: cTabButton },
             { tag: "CustomLabel", comp: cLabel },
             { tag: "CustomTextField", comp: cTextField },
             { tag: "CustomSwitch", comp: cSwitch },
@@ -51,6 +55,7 @@ TestCase {
             { tag: "AboutDialog", comp: cAbout },
             { tag: "LogView", comp: cLog },
             { tag: "InputSourceSelector", comp: cInput },
+            { tag: "SidePanel", comp: cSidePanel },
         ]
     }
 
@@ -148,5 +153,69 @@ TestCase {
         compare(combo.currentIndex, sel.backends.indexOf("Image file"))
         sel.currentBackend = "Video file"
         compare(combo.currentIndex, sel.backends.indexOf("Video file"))
+    }
+
+    function test_sidepanel_toggle() {
+        // Give the panel a parent width so its geometry is meaningful: the
+        // sliding surface anchors its x to parent.width. createTemporaryObject
+        // with an explicit size makes root.width real (a bare tc parent is 0-wide).
+        var sp = createTemporaryObject(cSidePanel, tc, { width: 1280, height: 720 })
+        verify(sp !== null)
+        compare(sp.width, 1280)
+
+        // Documented defaults.
+        compare(sp.open, false)
+        compare(sp.panelWidth, 320)
+
+        var panel = findChild(sp, "panel")
+        verify(panel !== null, "panel not found")
+
+        // Closed: the surface sits fully off the right edge (x === parent.width).
+        wait(0)
+        compare(Math.round(panel.x), Math.round(sp.width))
+
+        // Opening slides it flush against the right edge; x animates, so wait
+        // for it to settle.
+        sp.open = true
+        tryCompare(panel, "x", sp.width - sp.panelWidth)
+
+        // Closing slides it back off-screen.
+        sp.open = false
+        tryCompare(panel, "x", sp.width)
+    }
+
+    function test_sidepanel_icon() {
+        var sp = createTemporaryObject(cSidePanel, tc, { width: 1280, height: 720 })
+        verify(sp !== null)
+        var icon = findChild(sp, "hamburgerIcon")
+        verify(icon !== null, "hamburgerIcon not found")
+        // The inline data-URI SVG loads asynchronously.
+        tryCompare(icon, "status", Image.Ready)
+        compare(icon.implicitWidth, 22)
+        compare(icon.implicitHeight, 22)
+    }
+
+    function test_sidepanel_content_slot() {
+        // Children declared inside a SidePanel are its default `content` slot:
+        // they must be reparented into the content holder nested inside the
+        // sliding panel, not left as bare children of the SidePanel root.
+        var sp = createTemporaryObject(cSidePanelWithContent, tc, { width: 1280, height: 720 })
+        verify(sp !== null)
+
+        // The injected body survives the reparent and keeps its properties.
+        var body = findChild(sp, "injectedBody")
+        verify(body !== null, "injected content not found")
+        compare(body.text, "hello world")
+
+        // Prove it lives INSIDE the panel body: walk the parent chain from the
+        // injected item and assert the sliding panel is one of its ancestors.
+        var panel = findChild(sp, "panel")
+        verify(panel !== null, "panel not found")
+        function isAncestor(anc, node) {
+            var p = node.parent
+            while (p) { if (p === anc) return true; p = p.parent }
+            return false
+        }
+        verify(isAncestor(panel, body), "injected content must live inside the panel body")
     }
 }
