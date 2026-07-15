@@ -17,6 +17,7 @@ TestCase {
     Component { id: cTabButton; CustomTabButton {} }
     Component { id: cLabel; CustomLabel {} }
     Component { id: cTextField; CustomTextField {} }
+    Component { id: cSpinBox; CustomSpinBox {} }
     Component { id: cSwitch; CustomSwitch {} }
     Component { id: cCombo; CustomComboBox {} }
     Component { id: cEditCombo; EditableComboBox {} }
@@ -48,6 +49,7 @@ TestCase {
             { tag: "CustomTabButton", comp: cTabButton },
             { tag: "CustomLabel", comp: cLabel },
             { tag: "CustomTextField", comp: cTextField },
+            { tag: "CustomSpinBox", comp: cSpinBox },
             { tag: "CustomSwitch", comp: cSwitch },
             { tag: "CustomComboBox", comp: cCombo },
             { tag: "EditableComboBox", comp: cEditCombo },

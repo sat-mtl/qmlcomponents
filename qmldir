@@ -12,6 +12,7 @@ CustomComboBox         ui/CustomComboBox.qml
 EditableComboBox       ui/EditableComboBox.qml
 CustomLabel            ui/CustomLabel.qml
 CustomTextField        ui/CustomTextField.qml
+CustomSpinBox          ui/CustomSpinBox.qml
 CustomSwitch           ui/CustomSwitch.qml
 AppMenuBar             ui/AppMenuBar.qml
 AboutDialog            ui/AboutDialog.qml
