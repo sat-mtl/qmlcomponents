@@ -41,6 +41,7 @@ ApplicationWindow {
             anchors.fill: parent
             panelWidth: 480
             edge: Qt.RightEdge
+            open: true
 
             ColumnLayout {
                 anchors.fill: parent
@@ -65,12 +66,31 @@ ApplicationWindow {
                         clip: true
 
                         ColumnLayout {
-                            width: sourcesScroll.availableWidth
+                            width: win.width - 2 * Theme.padding
+                            x: Theme.padding
                             spacing: Theme.spacing
 
                             CustomLabel {
-                                Layout.margins: Theme.padding
-                                text: "hello world"
+                                text: "Source"
+                                font.bold: true
+                                font.pixelSize: Theme.fontSizeTitle
+                                Layout.topMargin: Theme.padding
+                            }
+
+                            CustomSwitch {
+                                text: "Test"
+                                checked: testEnabled
+                                onToggled: testEnabled = checked
+
+                                property bool testEnabled: true
+                            }
+
+                            InputSourceSelector {
+                                Layout.fillWidth: true
+                                allowedBackends: ["Camera", "Video file", "NDI", "Spout", "Syphon"]
+                                platformOs: "windows"   // force-show NDI + Spout in the gallery
+                                sources: ["OBS (NDI)", "Resolume"]
+                                statusText: "Type a source if it is not listed"
                             }
                         }
                     }
@@ -81,17 +101,105 @@ ApplicationWindow {
                         clip: true
 
                         ColumnLayout {
-                            width: optionsScroll.availableWidth
+                            width: win.width - 2 * Theme.padding
+                            x: Theme.padding
                             spacing: Theme.spacing
 
                             CustomLabel {
-                                Layout.margins: Theme.padding
-                                text: "hello tab"
+                                id: optionsTitle
+                                text: "Options"
+                                font.bold: true
+                                font.pixelSize: Theme.fontSizeTitle
+                                Layout.topMargin: Theme.padding
                             }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+
+                                CustomLabel { text: "Model" }
+                                EditableComboBox {
+                                    id: modelComboBox
+                                    Layout.fillWidth: true
+                                    model: ["Model 0", "Model 1"]
+                                }
+
+                            }
+
+                            Rectangle { Layout.fillWidth: true; height: 1; color: Theme.separatorColor }
+
+                            CustomLabel {
+                                id: cameraTitle
+                                text: "Camera"
+                                font.bold: true
+                                font.pixelSize: Theme.fontSizeTitle
+                                Layout.topMargin: Theme.padding
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+
+                                CustomLabel { text: "FoV" }
+                                SpinBox {
+                                    id: fovSpinBox
+                                    editable: true
+                                    Layout.fillWidth: true
+                                    from: 60
+                                    to: 120
+                                    value: 90
+                                    stepSize: 1
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: Theme.fontSizeBody
+                                }
+
+                            }
+
+                            CustomSwitch {
+                                id: flySwitch
+                                text: "Fly mode"
+                                checked: flyEnabled
+                                onToggled: flyEnabled = checked
+
+                                property bool flyEnabled: false
+                            }
+
+                            Rectangle { Layout.fillWidth: true; height: 1; color: Theme.separatorColor }
+
+                            CustomLabel {
+                                id: advancedTitle
+                                text: "Advanced"
+                                font.bold: true
+                                font.pixelSize: Theme.fontSizeTitle
+                                Layout.topMargin: Theme.padding
+                            }
+
+                            CustomSwitch {
+                                id: debugSwitch
+                                text: "Debug"
+                                checked: debugEnabled
+                                onToggled: debugEnabled = checked
+
+                                property bool debugEnabled: false
+                            }
+
+                            CustomButton {
+                                id: aboutButton
+                                Layout.preferredWidth: parent.width
+                                height: Theme.buttonHeight
+                                text: "About"
+                                onClicked: contentAbout.open()
+                            }
+
                         }
                     }
                 }
             }
+        }
+
+        AboutDialog {
+            id: contentAbout
+            appName: "Gallery"
+            appDetails: "Component gallery for the shared SAT QML module."
+            parentWindow: contentWindow
         }
     }
 
