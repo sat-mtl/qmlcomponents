@@ -41,6 +41,11 @@ Dialog {
     x: 0
     y: 0
 
+    // Themed dialog surface (full-window modal).
+    background: Rectangle {
+        color: Theme.backgroundColor
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 40
@@ -109,10 +114,10 @@ Dialog {
             }
         }
 
-        Button {
+        CustomButton {
             Layout.alignment: Qt.AlignHCenter
+            Layout.preferredWidth: 160
             text: qsTr("Close")
-            font.family: Theme.fontFamily
             onClicked: aboutDialog.close()
         }
     }
