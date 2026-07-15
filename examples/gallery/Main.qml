@@ -40,6 +40,7 @@ ApplicationWindow {
         SidePanel {
             anchors.fill: parent
             panelWidth: 480
+            edge: Qt.RightEdge
 
             ColumnLayout {
                 anchors.fill: parent

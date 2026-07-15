@@ -3,10 +3,11 @@
 import QtQuick
 import ca.qc.sat.qmlcomponents
 
-// Slide-over side panel that animates in from the right edge of its parent.
+// Slide-over side panel that animates in from the left or right edge of its
+// parent, selected with `edge` (Qt.LeftEdge or Qt.RightEdge, default right).
 //
-// A discrete hamburger button toggles the panel: pinned to the top-right when
-// closed, it slides left to sit just outside the panel as it opens. A light
+// A discrete hamburger button toggles the panel: pinned to the panel's outer
+// top corner when closed, it slides inward with the panel as it opens. A light
 // scrim fades in behind the open panel and dismisses it when clicked.
 // Give the component a parent that fills the window and it overlays everything
 // declared before it:
@@ -24,6 +25,10 @@ Item {
 
     property bool open: false
     property int panelWidth: 320
+
+    // Edge the panel slides in from: Qt.LeftEdge or Qt.RightEdge.
+    property int edge: Qt.RightEdge
+    readonly property bool _fromLeft: root.edge === Qt.LeftEdge
 
     // Host-injected panel body (default slot). Children declared inside a
     // SidePanel are reparented into the content holder below.
@@ -65,16 +70,22 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: root.panelWidth
-        x: root.open ? parent.width - width : parent.width
+        x: root._fromLeft ? (root.open ? 0 : -width)
+                          : (root.open ? parent.width - width : parent.width)
         color: Theme.backgroundColor
 
         Behavior on x {
             NumberAnimation { duration: Theme.animationDuration; easing.type: Easing.InOutQuad }
         }
 
-        // Left-edge separator against the underlying content.
+        // Separator on the panel's inner edge, against the underlying content.
         Rectangle {
-            anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
+            anchors {
+                left: root._fromLeft ? undefined : parent.left
+                right: root._fromLeft ? parent.right : undefined
+                top: parent.top
+                bottom: parent.bottom
+            }
             width: 1
             color: Theme.separatorColor
         }
@@ -82,26 +93,27 @@ Item {
         // Swallow clicks so they do not fall through to the scrim/content.
         MouseArea { anchors.fill: parent }
 
-        // Host content area. The toggle button slides out to the left of the
-        // panel when open, so the body gets the full panel — no reserved strip.
+        // Host content area. The toggle slides clear of the panel when open,
+        // so the body gets the full panel — no reserved strip.
         Item {
             id: contentHolder
             anchors.fill: parent
         }
     }
 
-    // ---- Discrete hamburger toggle, pinned to the top-right corner ----
+    // ---- Discrete hamburger toggle, pinned to the panel's outer corner ----
     Item {
         id: toggle
         width: Theme.buttonHeight
         height: Theme.buttonHeight
         anchors.top: parent.top
         anchors.topMargin: Theme.padding
-        // Pinned top-right when closed; slides left to just outside the panel's
-        // left edge as it opens, in lockstep with the panel's slide.
-        x: root.open
-           ? parent.width - root.panelWidth - width - Theme.padding
-           : parent.width - width - Theme.padding
+        // Pinned to the panel's outer top corner when closed; slides inward to
+        // just outside the panel as it opens, in lockstep with the panel.
+        x: root._fromLeft
+           ? (root.open ? root.panelWidth + Theme.padding : Theme.padding)
+           : (root.open ? parent.width - root.panelWidth - width - Theme.padding
+                        : parent.width - width - Theme.padding)
         z: 1   // above the panel so it always toggles
 
         Behavior on x {

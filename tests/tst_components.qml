@@ -184,6 +184,35 @@ TestCase {
         tryCompare(panel, "x", sp.width)
     }
 
+    function test_sidepanel_edge_left() {
+        // Default edge is the right side; a plain instance must report it.
+        var def = createTemporaryObject(cSidePanel, tc, { width: 1280, height: 720 })
+        verify(def !== null)
+        compare(def.edge, Qt.RightEdge)
+
+        // A left-edge panel mirrors the geometry: it hides off the LEFT edge
+        // and slides flush against x === 0 when opened.
+        var sp = createTemporaryObject(cSidePanel, tc, { width: 1280, height: 720, edge: Qt.LeftEdge })
+        verify(sp !== null)
+        compare(sp.width, 1280)
+        compare(sp.edge, Qt.LeftEdge)
+
+        var panel = findChild(sp, "panel")
+        verify(panel !== null, "panel not found")
+
+        // Closed: the surface sits fully off the left edge (x === -panelWidth).
+        wait(0)
+        compare(Math.round(panel.x), -sp.panelWidth)
+
+        // Opening slides it flush against the left edge; x animates, so wait.
+        sp.open = true
+        tryCompare(panel, "x", 0)
+
+        // Closing slides it back off-screen to the left.
+        sp.open = false
+        tryCompare(panel, "x", -sp.panelWidth)
+    }
+
     function test_sidepanel_icon() {
         var sp = createTemporaryObject(cSidePanel, tc, { width: 1280, height: 720 })
         verify(sp !== null)
