@@ -123,7 +123,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: Theme.borderRadius
-            color: toggleArea.containsMouse ? Theme.buttonBgHover : "transparent"
+            color: toggleArea.containsMouse ? Theme.buttonBgHover : Theme.buttonBgInactive
             Behavior on color { ColorAnimation { duration: Theme.animationDuration / 2 } }
         }
 
