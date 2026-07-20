@@ -16,8 +16,13 @@ jobs:
       - name: Install Qt6 QML tooling
         run: |
           sudo apt-get update -qq
+          # libqt6svg6 ships the QtSvg imageformat plugin (imageformats/libqsvg.so)
+          # so QQuickImage can decode the inline data:image/svg+xml hamburger icon.
+          # (On 24.04 the plugin lives in this lib; the separate qt6-svg-plugins
+          # package only exists from 25.10+.)
           sudo apt-get install -y --no-install-recommends \
             qt6-declarative-dev-tools \
+            libqt6svg6 \
             qml6-module-qtquick \
             qml6-module-qtquick-controls \
             qml6-module-qtquick-templates \
