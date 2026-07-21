@@ -180,6 +180,8 @@ ColumnLayout {
             var filePath = selectedFile.toString()
             if (filePath.startsWith("file://"))
                 filePath = filePath.substring(7)
+            // remove leading slash on Windows
+            filePath = filePath.substring(Qt.platform.os === "windows" ? 1 : 0)
             videoPathField.text = filePath
         }
     }
@@ -220,6 +222,8 @@ ColumnLayout {
             var filePath = selectedFile.toString()
             if (filePath.startsWith("file://"))
                 filePath = filePath.substring(7)
+            // remove leading slash on Windows
+            filePath = filePath.substring(Qt.platform.os === "windows" ? 1 : 0)
             imagePathField.text = filePath
         }
     }
