@@ -76,6 +76,18 @@ ColumnLayout {
             backendCombo.currentIndex = idx
     }
 
+    // The path properties are the single source of truth: the text field, the file
+    // dialog and the host (drag-and-drop) all write them, never the field's text.
+    // Notifying from the property is what keeps those three routes equivalent.
+    onVideoFilePathChanged: {
+        videoFileSelected(videoFilePath)
+        backendSelected(currentBackend)
+    }
+    onImageFilePathChanged: {
+        imageFileSelected(imageFilePath)
+        backendSelected(currentBackend)
+    }
+
     spacing: Theme.spacing
 
     CustomLabel {
@@ -155,11 +167,7 @@ ColumnLayout {
             Layout.fillWidth: true
             placeholderText: qsTr("Select video file…")
             text: selector.videoFilePath
-            onTextChanged: {
-                selector.videoFilePath = text
-                selector.videoFileSelected(text)
-                selector.backendSelected(selector.currentBackend)
-            }
+            onTextEdited: selector.videoFilePath = text
         }
 
         CustomButton {
@@ -182,7 +190,7 @@ ColumnLayout {
                 filePath = filePath.substring(7)
             // remove leading slash on Windows
             filePath = filePath.substring(Qt.platform.os === "windows" ? 1 : 0)
-            videoPathField.text = filePath
+            selector.videoFilePath = filePath
         }
     }
 
@@ -197,11 +205,7 @@ ColumnLayout {
             Layout.fillWidth: true
             placeholderText: qsTr("Select image file…")
             text: selector.imageFilePath
-            onTextChanged: {
-                selector.imageFilePath = text
-                selector.imageFileSelected(text)
-                selector.backendSelected(selector.currentBackend)
-            }
+            onTextEdited: selector.imageFilePath = text
         }
 
         CustomButton {
@@ -224,7 +228,7 @@ ColumnLayout {
                 filePath = filePath.substring(7)
             // remove leading slash on Windows
             filePath = filePath.substring(Qt.platform.os === "windows" ? 1 : 0)
-            imagePathField.text = filePath
+            selector.imageFilePath = filePath
         }
     }
 
