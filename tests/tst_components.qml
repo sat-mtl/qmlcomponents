@@ -13,6 +13,8 @@ TestCase {
     id: tc
     name: "qmlcomponents"
 
+    Component { id: logoProbe; Image { source: Theme.satLogoSource } }
+
     Component { id: cButton; CustomButton {} }
     Component { id: cTabButton; CustomTabButton {} }
     Component { id: cLabel; CustomLabel {} }
@@ -33,14 +35,39 @@ TestCase {
         verify(Theme.fontFamily.length > 0)
         // palette switch must change a colour (compare string forms; QColor
         // value comparison via !== is unreliable in QML JS)
-        Theme.dark = true
+        Theme.colorSchemeOverride = Qt.ColorScheme.Dark
         compare(Theme.dark, true)
         var darkBg = Theme.backgroundColor.toString()
-        Theme.dark = false
+        Theme.colorSchemeOverride = Qt.ColorScheme.Light
         compare(Theme.dark, false)
         var lightBg = Theme.backgroundColor.toString()
-        Theme.dark = true
+        Theme.colorSchemeOverride = Qt.ColorScheme.Dark
         verify(darkBg !== lightBg, "dark/light backgrounds must differ: " + darkBg + " vs " + lightBg)
+    }
+
+    function test_theme_follows_os_colour_scheme() {
+        Theme.colorSchemeOverride = Qt.ColorScheme.Unknown
+        compare(Theme.dark, Application.styleHints.colorScheme !== Qt.ColorScheme.Light)
+        Theme.colorSchemeOverride = Qt.ColorScheme.Dark
+    }
+
+    // The logo must flip with the scheme and both files must actually decode:
+    // a missing or undecodable source leaves Image at status Error, which is
+    // exactly the silent failure this property exists to prevent.
+    function test_sat_logo_source() {
+        Theme.colorSchemeOverride = Qt.ColorScheme.Dark
+        var white = Theme.satLogoSource.toString()
+        Theme.colorSchemeOverride = Qt.ColorScheme.Light
+        var black = Theme.satLogoSource.toString()
+        verify(white !== black, "logo must differ between schemes")
+
+        var probe = logoProbe.createObject(tc)
+        for (var i = 0; i < 2; ++i) {
+            Theme.colorSchemeOverride = i === 0 ? Qt.ColorScheme.Light : Qt.ColorScheme.Dark
+            tryCompare(probe, "status", Image.Ready, 5000)
+            verify(probe.implicitWidth > 0 && probe.implicitHeight > 0)
+        }
+        probe.destroy()
     }
 
     function test_instantiate_data() {

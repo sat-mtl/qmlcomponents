@@ -6,15 +6,21 @@ import QtQuick
 // Shared application theme: a single switchable source of truth for colours,
 // layout tokens and typography across SAT ossia/score apps.
 //
-// Apps select the active palette with `Theme.dark = true|false`; every
-// component in this module reads `Theme.*` directly (no injected `appStyle`
-// context property anymore). DarkPalette/LightPalette live in the same
-// directory, so they resolve without importing the module here.
+// `dark` follows the OS colour scheme by default and tracks it live; an app
+// that must pin a scheme sets `colorSchemeOverride`. Every component in this
+// module reads `Theme.*` directly (no injected `appStyle` context property
+// anymore). DarkPalette/LightPalette live in the same directory, so they
+// resolve without importing the module here.
 QtObject {
     id: theme
 
     // ---- Active palette selection ----
-    property bool dark: false
+    // Qt.ColorScheme.Unknown follows the OS; Light/Dark pins the scheme.
+    property int colorSchemeOverride: Qt.ColorScheme.Unknown
+    // An OS that reports Unknown gets the dark palette: these apps are dark-first.
+    property bool dark: colorSchemeOverride === Qt.ColorScheme.Unknown
+                        ? Application.styleHints.colorScheme !== Qt.ColorScheme.Light
+                        : colorSchemeOverride === Qt.ColorScheme.Dark
     readonly property DarkPalette darkPalette: DarkPalette {}
     readonly property LightPalette lightPalette: LightPalette {}
 
@@ -61,6 +67,13 @@ QtObject {
     // ---- Misc ----
     property int borderRadius: 8
     property int animationDuration: 200
+
+    // ---- Brand ----
+    // PNG rather than SVG: the qsvg image-format plugin is what
+    // SCORE_QT_PLUGINS_NO_IMAGEFORMATS=1 is meant to drop, while QtGui decodes
+    // PNG itself. @2x is picked up automatically on high-DPI screens.
+    readonly property url satLogoSource: Qt.resolvedUrl(
+        dark ? "images/logo-sat-white.png" : "images/logo-sat-black.png")
 
     // ---- Sidebar ----
     property int sidebarWidth: 100
