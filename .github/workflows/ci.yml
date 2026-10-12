@@ -13,26 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Qt6 QML tooling
-        run: |
-          sudo apt-get update -qq
-          # libqt6svg6 ships the QtSvg imageformat plugin (imageformats/libqsvg.so)
-          # so QQuickImage can decode the inline data:image/svg+xml hamburger icon.
-          # (On 24.04 the plugin lives in this lib; the separate qt6-svg-plugins
-          # package only exists from 25.10+.)
-          sudo apt-get install -y --no-install-recommends \
-            qt6-declarative-dev-tools \
-            libqt6svg6 \
-            qml6-module-qtquick \
-            qml6-module-qtquick-controls \
-            qml6-module-qtquick-templates \
-            qml6-module-qtquick-layouts \
-            qml6-module-qtquick-window \
-            qml6-module-qtquick-dialogs \
-            qml6-module-qtcore \
-            qml6-module-qtqml \
-            qml6-module-qtqml-workerscript \
-            qml6-module-qttest
+      # The apps ship Qt 6.12 from the ossia SDK, and Theme.qml needs the
+      # Qt.ColorScheme enum, which only exists from 6.5 — Ubuntu's 6.4.2 is too
+      # old to be a meaningful gate.
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.*'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
 
       - name: Build import-path tree (mirrors ca/qc/sat/qmlcomponents)
         run: |
@@ -42,17 +33,15 @@ jobs:
       - name: qmllint (informational — unqualified access downgraded)
         continue-on-error: true
         run: |
-          QMLLINT=$(command -v qmllint || echo /usr/lib/qt6/bin/qmllint)
           for f in theme/*.qml ui/*.qml io/*.qml examples/gallery/Main.qml; do
             [ "$f" = "ui/VideoPreview.qml" ] && continue   # needs host Score.UI module
             echo "::group::$f"
-            QT_QPA_PLATFORM=offscreen "$QMLLINT" -I "$RUNNER_TEMP/imports" --unqualified info "$f" || true
+            QT_QPA_PLATFORM=offscreen qmllint -I "$RUNNER_TEMP/imports" --unqualified info "$f" || true
             echo "::endgroup::"
           done
 
       - name: Headless instantiation tests (hard gate)
         run: |
-          RUNNER=$(command -v qmltestrunner || echo /usr/lib/qt6/bin/qmltestrunner)
-          QT_QPA_PLATFORM=offscreen "$RUNNER" \
+          QT_QPA_PLATFORM=offscreen qmltestrunner \
             -input tests/tst_components.qml \
             -import "$RUNNER_TEMP/imports"
