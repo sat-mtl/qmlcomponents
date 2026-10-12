@@ -226,10 +226,28 @@ ApplicationWindow {
                 Layout.topMargin: Theme.padding
             }
 
+            Image {
+                Layout.fillWidth: true
+                Layout.preferredHeight: width * sourceSize.height / sourceSize.width
+                source: Theme.satLogoSource
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+            }
+
+            CustomSwitch {
+                text: "Follow the OS colour scheme"
+                checked: Theme.colorSchemeOverride === Qt.ColorScheme.Unknown
+                onToggled: Theme.colorSchemeOverride =
+                    checked ? Qt.ColorScheme.Unknown
+                            : (Theme.dark ? Qt.ColorScheme.Dark : Qt.ColorScheme.Light)
+            }
+
             CustomSwitch {
                 text: "Dark theme"
+                enabled: Theme.colorSchemeOverride !== Qt.ColorScheme.Unknown
                 checked: Theme.dark
-                onToggled: Theme.dark = checked
+                onToggled: Theme.colorSchemeOverride =
+                    checked ? Qt.ColorScheme.Dark : Qt.ColorScheme.Light
             }
 
             RowLayout {
