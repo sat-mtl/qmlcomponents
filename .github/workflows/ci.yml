@@ -9,9 +9,10 @@ on:
 jobs:
   validate:
     name: qmllint + headless instantiation tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The apps ship Qt 6.12 from the ossia SDK, and Theme.qml needs the
       # Qt.ColorScheme enum, which only exists from 6.5 — Ubuntu's 6.4.2 is too
